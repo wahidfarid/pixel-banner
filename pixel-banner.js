@@ -51,8 +51,12 @@
 		
 		ctx.imageSmoothingEnabled = false;
 
-		ctx.fillStyle = pallete[Math.floor(Math.random() * pallete.length)];
-		ctx.fillRect(10, 10, w, h);
+		for(var x = 0; x < c.width; x+= w){
+			for(var y = 0; y < c.height; y+= h){
+				ctx.fillStyle = pallete[Math.floor(Math.random() * pallete.length)];
+				ctx.fillRect(x, y, w, h);
+			}
+		}
 	}
 
     // make accessible globally
