@@ -14,11 +14,11 @@
 		dynamic_options: {
 			dynamic: true,
 			update_mode: "single",
-			update_interval: 50
+			update_interval: 250
 		},
 		pixel_options: {
-			size: {width: 30, height: 30},
-			color_pallete: ["#6d8891", "#dfe6ea", "#dacdbe", "#cda20b", "#6b3603"],
+			size: {width: 40, height: 40},
+			color_pallete: ["#1abc9c", "#2ecc71", "#3498db", "#f1c40f", "#e67e22", "#e74c3c"],
 			probability: {x_axis: "always", y_axis: "always"}
 		}
     }
