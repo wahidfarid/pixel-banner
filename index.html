@@ -4,10 +4,23 @@
 		<script src="pixel-banner.js"></script>
 		<style>
 			body{background: #000;}
+			#pixel_banner_div{
+				width 100%;
+				height: 500px;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="pixel_banner_div"></div>
-		<script>new PixelBanner();</script>
+		<script>
+				new PixelBanner({
+						target: "#pixel_banner_div",
+						pixel_options:{
+								probability:{
+									y_axis: "distance"
+								}
+						}
+				});
+		</script>
 	</body>
 </html>

@@ -1,9 +1,9 @@
 (function(){
+
 	// constructor function
 	var PixelBanner = function(opts){
-		this.options = Object.assign(PixelBanner.defaults , opts);
-		this.target_div = document.querySelector(this.options.target);
-		console.log(this.target_div);
+
+		configureOptions(this, opts)
 
 		drawPixels(this);
 	}
@@ -12,10 +12,30 @@
     PixelBanner.defaults = {
 		target: "body",
 		pixel_options: {
-			size: {width: 50, height: 50},
-			color_pallete: ["#6d8891", "#dfe6ea", "#dacdbe", "#cda20b", "#6b3603"]
+			size: {width: 30, height: 30},
+			color_pallete: ["#6d8891", "#dfe6ea", "#dacdbe", "#cda20b", "#6b3603"],
+			probability: {x_axis: "always", y_axis: "always"}
+
 		}
     }
+	
+	// Configuration
+	function configureOptions(src, opts){
+		src.options = mergeDeep(PixelBanner.defaults , opts);
+		src.target_div = document.querySelector(src.options.target);
+
+
+		// Probability method lookups
+		if(src.options.pixel_options.probability.x_axis == "always")
+			src.options.pixel_options.probability.x_axis = probabilityAlways;
+		if(src.options.pixel_options.probability.y_axis == "always")
+			src.options.pixel_options.probability.y_axis = probabilityAlways;
+
+		if(src.options.pixel_options.probability.x_axis == "distance")
+			src.options.pixel_options.probability.x_axis = probabilityFromDistanceToCenter;
+		if(src.options.pixel_options.probability.y_axis == "distance")
+			src.options.pixel_options.probability.y_axis = probabilityFromDistanceToCenter;
+	}
 
 	// Draw the pixels
 	function drawPixels(src){
@@ -53,12 +73,60 @@
 
 		for(var x = 0; x < c.width; x+= w){
 			for(var y = 0; y < c.height; y+= h){
+				
+				console.log(opt);
+				// Skip based on probability
+				if(Math.random() > opt.probability.x_axis(x, c.width) * opt.probability.y_axis(y, c.height))
+					continue;
 				ctx.fillStyle = pallete[Math.floor(Math.random() * pallete.length)];
 				ctx.fillRect(x, y, w, h);
 			}
 		}
 	}
+	
+	// Probability Functions
+	function probabilityFromDistanceToCenter(position, length) {
+		return   1 - (Math.abs(position - (length/2))  / (length/2));
+	}
+	function probabilityAlways(position, length){return 1;}
 
     // make accessible globally
     window.PixelBanner = PixelBanner;
 })()
+
+
+//////////////////////////
+/// Deep Merge Code Courtesy of https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
+//////////////////////////
+
+/**
+ * Simple object check.
+ * @param item
+ * @returns {boolean}
+ */
+function isObject(item) {
+  return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
+/**
+ * Deep merge two objects.
+ * @param target
+ * @param ...sources
+ */
+function mergeDeep(target, ...sources) {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources);
+}
