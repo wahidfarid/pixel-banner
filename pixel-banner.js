@@ -93,7 +93,7 @@
 		for(var x = 0; x < c.width; x+= w){
 			for(var y = 0; y < c.height; y+= h){
 			  if(calculateProbability(opt.probability, x, y, c))
-				drawPixel(x, y, w, h, pallete, ctx, opt);
+				drawPixel(x, y, w, h, null, ctx, opt);
 			}
 		}
 	}
@@ -106,9 +106,9 @@
 		return true;
 	}
 	// Draw a single pixel
-	function drawPixel(x, y, w, h, pallete, ctx, opt){
+	function drawPixel(x, y, w, h, color, ctx, opt){
 		ctx.imageSmoothingEnabled = false;
-		ctx.fillStyle = pallete[Math.floor(Math.random() * pallete.length)];
+		ctx.fillStyle = color || opt.color_pallete[Math.floor(Math.random() * opt.color_pallete.length)];
 		ctx.fillRect(x, y, w, h);
 
 		ctx.lineWidth = opt.border.width;
@@ -132,8 +132,10 @@
 
 
 
-		if(calculateProbability(opt.probability, x, y, c))
-			drawPixel(x,y,w,h,pallete, ctx, opt);
+		if(calculateProbability(opt.probability, x, y, c)){
+		    var color = opt.color_pallete[Math.floor(Math.random() * opt.color_pallete.length)];
+			drawPixel(x,y,w,h,color, ctx, opt);
+		}
 		else
 			ctx.clearRect(x,y,w,h);
 	}
