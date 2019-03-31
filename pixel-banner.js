@@ -14,7 +14,8 @@
 		dynamic_options: {
 			dynamic: true,
 			update_mode: "single",
-			update_interval: 250
+			update_interval: 250,
+			fade_interval_duration: 50
 		},
 		pixel_options: {
 			size: {width: 40, height: 40},
@@ -52,7 +53,7 @@
 		if(src.options.dynamic_options.update_mode == "all")
 			drawOnCanvas(src.canvas, src.options.pixel_options);
 		else if(src.options.dynamic_options.update_mode == "single")
-			drawRandomPixel(src.canvas, src.options.pixel_options);
+			drawRandomPixel(src.canvas, src.options.pixel_options, src.options.dynamic_options);
 	}
 
 	// Draw the pixels
@@ -116,7 +117,7 @@
 		ctx.strokeRect(x, y, w, h);
 	}
 	//Draw Random Pixel
-	function drawRandomPixel(c, opt){
+	function drawRandomPixel(c, opt, anim_opt){
 		var ctx = c.getContext("2d");
 		var w = opt.size.width;
 		var h = opt.size.height;
@@ -134,10 +135,25 @@
 
 		if(calculateProbability(opt.probability, x, y, c)){
 		    var color = opt.color_pallete[Math.floor(Math.random() * opt.color_pallete.length)];
-			drawPixel(x,y,w,h,color, ctx, opt);
+			replacePixel(x,y,w,h,color, ctx, opt, 0, anim_opt.fade_interval_duration);
 		}
-		else
-			ctx.clearRect(x,y,w,h);
+		//else
+			//ctx.clearRect(x,y,w,h);
+	}
+	// Replace a Pixel
+	function replacePixel(x, y, w, h, color, ctx, opt, step, fade_interval_duration){
+		var imgData = ctx.getImageData(x, y, w, h);
+		for (i = 0; i < imgData.data.length; i += 4)
+    		imgData.data[i+3] = imgData.data[i+3] - 12;
+		
+		ctx.putImageData(imgData, x, y);
+		if(step<20){
+			window.setTimeout(function(){
+				replacePixel(x, y, w, h, color, ctx, opt, step+1, fade_interval_duration);
+			}, fade_interval_duration);
+		}
+
+ 
 	}
 	// Probability Functions
 	function probabilityFromDistanceToCenter(position, length) {
