@@ -19,7 +19,8 @@
 		pixel_options: {
 			size: {width: 40, height: 40},
 			color_pallete: ["#1abc9c", "#2ecc71", "#3498db", "#f1c40f", "#e67e22", "#e74c3c"],
-			probability: {x_axis: "always", y_axis: "always"}
+			probability: {x_axis: "always", y_axis: "always"},
+			border: {width: 1, color: "#000"}
 		}
     }
 	
@@ -92,7 +93,7 @@
 		for(var x = 0; x < c.width; x+= w){
 			for(var y = 0; y < c.height; y+= h){
 			  if(calculateProbability(opt.probability, x, y, c))
-				drawPixel(x, y, w, h, pallete, ctx);
+				drawPixel(x, y, w, h, pallete, ctx, opt);
 			}
 		}
 	}
@@ -105,10 +106,14 @@
 		return true;
 	}
 	// Draw a single pixel
-	function drawPixel(x, y, w, h, pallete, ctx){
+	function drawPixel(x, y, w, h, pallete, ctx, opt){
 		ctx.imageSmoothingEnabled = false;
 		ctx.fillStyle = pallete[Math.floor(Math.random() * pallete.length)];
 		ctx.fillRect(x, y, w, h);
+
+		ctx.lineWidth = opt.border.width;
+		ctx.fillStyle = opt.border.color;
+		ctx.strokeRect(x, y, w, h);
 	}
 	//Draw Random Pixel
 	function drawRandomPixel(c, opt){
@@ -128,7 +133,7 @@
 
 
 		if(calculateProbability(opt.probability, x, y, c))
-			drawPixel(x,y,w,h,pallete, ctx);
+			drawPixel(x,y,w,h,pallete, ctx, opt);
 		else
 			ctx.clearRect(x,y,w,h);
 	}
