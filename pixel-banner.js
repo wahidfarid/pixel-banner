@@ -94,7 +94,7 @@
 		for(var x = 0; x < c.width; x+= w){
 			for(var y = 0; y < c.height; y+= h){
 			  if(calculateProbability(opt.probability, x, y, c))
-				drawPixel(x, y, w, h, null, ctx, opt);
+				drawPixel(x, y, w, h, null, ctx, opt, 1);
 			}
 		}
 	}
@@ -107,8 +107,9 @@
 		return true;
 	}
 	// Draw a single pixel
-	function drawPixel(x, y, w, h, color, ctx, opt){
+	function drawPixel(x, y, w, h, color, ctx, opt, alpha){
 		ctx.imageSmoothingEnabled = false;
+		ctx.globalAlpha = alpha;
 		ctx.fillStyle = color || opt.color_pallete[Math.floor(Math.random() * opt.color_pallete.length)];
 		ctx.fillRect(x, y, w, h);
 
@@ -142,17 +143,22 @@
 	}
 	// Replace a Pixel
 	function replacePixel(x, y, w, h, color, ctx, opt, step, fade_interval_duration){
-		var imgData = ctx.getImageData(x, y, w, h);
-		for (i = 0; i < imgData.data.length; i += 4)
-    		imgData.data[i+3] = imgData.data[i+3] - 12;
 		
-		ctx.putImageData(imgData, x, y);
 		if(step<20){
 			window.setTimeout(function(){
+				var imgData = ctx.getImageData(x, y, w, h);
+				for (i = 0; i < imgData.data.length; i += 4)
+    				imgData.data[i+3] = imgData.data[i+3] - 12;
+				ctx.putImageData(imgData, x, y);
 				replacePixel(x, y, w, h, color, ctx, opt, step+1, fade_interval_duration);
 			}, fade_interval_duration);
 		}
-
+		else if(step <41){
+			window.setTimeout(function(){
+				drawPixel(x,y,w,h, color, ctx, opt, (step-20)*0.05);
+				replacePixel(x, y, w, h, color, ctx, opt, step+1, fade_interval_duration);
+			}, fade_interval_duration);
+		}
  
 	}
 	// Probability Functions
