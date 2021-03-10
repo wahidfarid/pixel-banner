@@ -8,6 +8,8 @@ Background consists of multuple "pixel" blocks that span the selected element, a
 
 Built because i was inspired by the design of a colleague of mine.
 
+[See it in action!](https://wahidmagdy.github.io/pixel-banner/)
+
 ![Image of the original design](design.png)
 
 (i later found out that he never intended them to be animated, so that was a happy accident)
