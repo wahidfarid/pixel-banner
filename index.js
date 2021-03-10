@@ -1,2 +1,2 @@
 import './pixel-banner';
-exports.PixelBanner = PixelBanner;
+export default PixelBanner;
