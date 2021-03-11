@@ -1,9 +1,7 @@
-(function(){
-
 	// constructor function
-	var PixelBanner = function(opts){
+	var PixelBanner = function(opts={}, target_ref=null){
 
-		configureOptions(this, opts)
+		configureOptions(this, opts, target_ref)
 
 		drawPixels(this);
 	}
@@ -11,6 +9,7 @@
     // Attach our defaults for plugin to the plugin itself
     PixelBanner.defaults = {
 		target: "body",
+		opacity: 1,
 		dynamic_options: {
 			dynamic: true,
 			update_mode: "single",
@@ -26,11 +25,11 @@
     }
 	
 	// Configuration
-	function configureOptions(src, opts){
+	function configureOptions(src, opts, target_ref){
 
 		// Merge user given options with default
 		src.options = mergeDeep(PixelBanner.defaults , opts);
-		src.target_div = document.querySelector(src.options.target);
+		src.target_div = target_ref || document.querySelector(src.options.target);
 
 		// Dynamic runner
 		if(src.options.dynamic_options.dynamic){
@@ -57,14 +56,22 @@
 	}
 
 	// Draw the pixels
-	function drawPixels(src){
-		
+	function drawPixels(src){		
 		// Get target size
 		src.target_width = src.target_div.offsetWidth;
 		src.target_height = src.target_div.offsetHeight;
 
 		// Create Canvas Element
-		src.canvas = src.target_div.appendChild(initializeCanvas(src.target_width, src.target_height));
+		src.canvas = initializeCanvas(src.target_width, src.target_height);
+		
+		// Apply canvas transparency
+		src.canvas.style.opacity = src.options.opacity;
+
+		// Prepend canvas in targetDiv
+		src.target_div.prepend(src.canvas);
+
+		// Make target relative-positioned
+		src.target_div.style.position = "relative";
 
 		// Draw on Canvas
 		drawOnCanvas(src.canvas, src.options.pixel_options);
@@ -77,6 +84,8 @@
 		canvas.width = width;
 		canvas.height = height;
 		canvas.style.position = "absolute";
+		canvas.style.top = 0;
+		canvas.style.left = 0;
 
 		return canvas;
 	}
@@ -147,7 +156,7 @@
 		if(step<20){
 			window.setTimeout(function(){
 				var imgData = ctx.getImageData(x, y, w, h);
-				for (i = 0; i < imgData.data.length; i += 4)
+				for (var i = 0; i < imgData.data.length; i += 4)
     				imgData.data[i+3] = imgData.data[i+3] - 12;
 				ctx.putImageData(imgData, x, y);
 				replacePixel(x, y, w, h, color, ctx, opt, step+1, fade_interval_duration);
@@ -166,10 +175,8 @@
 		return   1 - (Math.abs(position - (length/2))  / (length/2));
 	}
 	function probabilityAlways(position, length){return 1;}
-
-    // make accessible globally
-    window.PixelBanner = PixelBanner;
-})()
+    // // make accessible globally
+    // window.PixelBanner = PixelBanner;
 
 
 //////////////////////////
@@ -207,3 +214,6 @@ function mergeDeep(target, ...sources) {
 
   return mergeDeep(target, ...sources);
 }
+
+
+export default PixelBanner;
